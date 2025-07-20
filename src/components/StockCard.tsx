@@ -2,14 +2,15 @@
 
 import React from 'react';
 import type { Stock } from '@/types';
-import { useAppStore, useUser, useUserPredictions } from '@/store/useAppStore';
+import { useAuth } from '@/components/AuthProvider';
+import { useAppStore, useUserPredictions } from '@/store/useAppStore';
 
 interface StockCardProps {
   stock: Stock;
 }
 
 const StockCard: React.FC<StockCardProps> = ({ stock }) => {
-  const user = useUser();
+  const { user } = useAuth();
   const userPredictions = useUserPredictions();
   const { setSelectedStock, setShowPredictionModal } = useAppStore();
 
