@@ -1,3 +1,6 @@
+// @ts-ignore
+const { serve } = Deno
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -22,7 +25,7 @@ interface MarketData {
   previousClose: number
 }
 
-const handler = async (req: Request): Promise<Response> => {
+serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -75,9 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     )
   }
-}
-
-export default handler
+})
 
 async function fetchStockData(
   symbol: string, 
