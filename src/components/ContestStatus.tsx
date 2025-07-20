@@ -9,7 +9,12 @@ interface ContestStatusProps {
 
 const ContestStatus: React.FC<ContestStatusProps> = ({ contest }) => {
   const now = new Date();
-  const timeLeft = contest.predictionDeadline.getTime() - now.getTime();
+  // Convert string date to Date object if needed
+  const deadline = contest.predictionDeadline instanceof Date 
+    ? contest.predictionDeadline 
+    : new Date(contest.predictionDeadline);
+  
+  const timeLeft = deadline.getTime() - now.getTime();
   const hoursLeft = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60)));
   const minutesLeft = Math.max(0, Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)));
 

@@ -70,7 +70,21 @@ export class DatabaseService {
       .order('symbol');
     
     if (error) throw error;
-    return data;
+    
+    // Transform snake_case to camelCase to match our types
+    return data?.map(stock => ({
+      id: stock.id,
+      symbol: stock.symbol,
+      companyName: stock.name, // 'name' from database maps to 'companyName' in our type
+      sector: stock.sector,
+      marketCap: stock.market_cap,
+      isActive: stock.is_active,
+      isFeatured: stock.is_featured,
+      difficultyLevel: 1, // Default value
+      currentPrice: stock.current_price,
+      priceChange: stock.change_24h,
+      priceChangePercent: undefined // We'll calculate this from change and price
+    })) || [];
   }
 
   static async getStockBySymbol(symbol: string) {
@@ -97,7 +111,20 @@ export class DatabaseService {
       .single();
     
     if (error && error.code !== 'PGRST116') throw error;
-    return data;
+    
+    if (!data) return null;
+    
+    // Transform snake_case to camelCase to match our types
+    return {
+      id: data.id,
+      type: 'weekly' as const,
+      startDate: new Date(data.start_date),
+      endDate: new Date(data.end_date),
+      predictionDeadline: new Date(data.prediction_deadline),
+      isActive: data.is_active,
+      featuredStocks: [], // We'll populate this separately
+      totalParticipants: data.total_participants || 0
+    };
   }
 
   static async getUpcomingContest() {
@@ -112,7 +139,20 @@ export class DatabaseService {
       .single();
     
     if (error && error.code !== 'PGRST116') throw error;
-    return data;
+    
+    if (!data) return null;
+    
+    // Transform snake_case to camelCase to match our types
+    return {
+      id: data.id,
+      type: 'weekly' as const,
+      startDate: new Date(data.start_date),
+      endDate: new Date(data.end_date),
+      predictionDeadline: new Date(data.prediction_deadline),
+      isActive: data.is_active,
+      featuredStocks: [], // We'll populate this separately
+      totalParticipants: data.total_participants || 0
+    };
   }
 
   // ===== PREDICTION OPERATIONS =====
