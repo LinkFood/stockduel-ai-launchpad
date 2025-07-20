@@ -6,6 +6,7 @@ import StockCard from './StockCard';
 import ContestStatus from './ContestStatus';
 import QuickLeaderboard from './QuickLeaderboard';
 import AuthPrompt from './AuthPrompt';
+import PredictionModal from './PredictionModal';
 import { useFeaturedStocks, useCurrentContest } from '@/store/useAppStore';
 
 const LandingScreen = () => {
@@ -139,6 +140,9 @@ const LandingScreen = () => {
 
       {/* Bottom Navigation Spacer */}
       <div className="h-20"></div>
+
+      {/* Prediction Modal */}
+      <PredictionModal />
     </div>
   );
 };
