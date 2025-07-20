@@ -193,6 +193,7 @@ export type Database = {
           created_at: string
           current_price: number | null
           id: string
+          is_active: boolean | null
           is_featured: boolean | null
           market_cap: number | null
           name: string
@@ -205,6 +206,7 @@ export type Database = {
           created_at?: string
           current_price?: number | null
           id?: string
+          is_active?: boolean | null
           is_featured?: boolean | null
           market_cap?: number | null
           name: string
@@ -217,6 +219,7 @@ export type Database = {
           created_at?: string
           current_price?: number | null
           id?: string
+          is_active?: boolean | null
           is_featured?: boolean | null
           market_cap?: number | null
           name?: string
