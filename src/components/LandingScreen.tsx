@@ -1,23 +1,55 @@
 'use client';
 
 import React from 'react';
-import { useAppStore, useFeaturedStocks, useCurrentContest, useUser } from '@/store/useAppStore';
+import { useAuth } from './AuthProvider';
 import StockCard from './StockCard';
 import ContestStatus from './ContestStatus';
 import QuickLeaderboard from './QuickLeaderboard';
 import AuthPrompt from './AuthPrompt';
+import { useFeaturedStocks, useCurrentContest } from '@/store/useAppStore';
 
 const LandingScreen = () => {
+  const { user, profile, signOut, loading: authLoading } = useAuth();
   const featuredStocks = useFeaturedStocks();
   const currentContest = useCurrentContest();
-  const user = useUser();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Header */}
       <div className="pt-8 pb-6 px-6">
-        <h1 className="text-3xl font-bold text-center">📊 STOCK PREDICTIONS</h1>
-        <p className="text-center text-gray-400 mt-2">Beat the AI. Win bragging rights.</p>
+        <div className="flex justify-between items-start mb-4">
+          <div className="text-center flex-1">
+            <h1 className="text-3xl font-bold">📊 STOCK PREDICTIONS</h1>
+            <p className="text-gray-400 mt-2">Beat the AI. Win bragging rights.</p>
+          </div>
+          
+          {/* User Menu */}
+          {user && (
+            <div className="flex items-center space-x-3">
+              <div className="text-right">
+                <p className="text-sm font-semibold">{profile?.full_name || user.email}</p>
+                <p className="text-xs text-gray-400">@{profile?.username || 'user'}</p>
+              </div>
+              <button
+                onClick={signOut}
+                className="bg-slate-700 hover:bg-slate-600 text-gray-300 px-3 py-2 rounded-lg text-sm transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+        </div>
         
         {/* Contest Status */}
         {currentContest && (

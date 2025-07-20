@@ -1,8 +1,19 @@
 'use client';
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPrompt: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    navigate('/auth');
+  };
+
+  const handleLogin = () => {
+    navigate('/auth');
+  };
+
   return (
     <div className="bg-gradient-to-r from-blue-900 to-purple-900 rounded-xl p-6 border border-blue-600">
       <div className="text-center">
@@ -11,10 +22,16 @@ const AuthPrompt: React.FC = () => {
           Join thousands of traders competing for bragging rights
         </p>
         <div className="flex space-x-3">
-          <button className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-500 hover:to-green-400 transition-all">
+          <button 
+            onClick={handleSignUp}
+            className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-500 hover:to-green-400 transition-all"
+          >
             🚀 Sign Up Free
           </button>
-          <button className="flex-1 bg-slate-700 hover:bg-slate-600 text-gray-300 font-semibold py-3 px-6 rounded-lg transition-colors">
+          <button 
+            onClick={handleLogin}
+            className="flex-1 bg-slate-700 hover:bg-slate-600 text-gray-300 font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
             🔑 Login
           </button>
         </div>
