@@ -1,6 +1,9 @@
 @tailwind base;
-@tailwind components;
+@tailwind components; 
 @tailwind utilities;
+
+/* Force Tailwind to load */
+.test-red { @apply bg-red-500; }
 
 :root {
   --background: 0 0% 100%;

@@ -13,7 +13,7 @@ const LandingScreen = () => {
   const user = useUser();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-red-500 text-white test-red">{/* TEMP: red background to test Tailwind */}
       {/* Header */}
       <div className="pt-8 pb-6 px-6">
         <h1 className="text-3xl font-bold text-center">📊 STOCK PREDICTIONS</h1>
