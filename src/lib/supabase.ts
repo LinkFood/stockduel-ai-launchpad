@@ -1,11 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
 
-// Environment variables - you'll need to add these to .env.local
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = 'https://jiwzejsgvovtwisinznp.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imppd3planNndm92dHdpc2luem5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjA2MjIsImV4cCI6MjA2ODU5NjYyMn0.Wfl0xhKd2HVoY9Zc57eoUoTpjod1VsqN7KlKUYrZzEU';
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Helper functions for common database operations
 export class DatabaseService {

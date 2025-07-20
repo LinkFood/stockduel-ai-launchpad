@@ -114,8 +114,8 @@ export class StockDataService {
       change: (meta.regularMarketPrice || close[lastIndex] || 0) - (meta.previousClose || 0),
       changePercent: ((meta.regularMarketPrice || close[lastIndex] || 0) - (meta.previousClose || 0)) / (meta.previousClose || 1) * 100,
       volume: meta.regularMarketVolume || volume[lastIndex] || 0,
-      high: meta.regularMarketDayHigh || Math.max(...high.filter(h => h !== null)) || 0,
-      low: meta.regularMarketDayLow || Math.min(...low.filter(l => l !== null)) || 0,
+      high: meta.regularMarketDayHigh || Math.max(...high.filter((h: any) => h !== null)) || 0,
+      low: meta.regularMarketDayLow || Math.min(...low.filter((l: any) => l !== null)) || 0,
       open: meta.regularMarketOpen || open[0] || 0,
       previousClose: meta.previousClose || 0
     };

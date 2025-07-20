@@ -28,6 +28,7 @@ interface AppStore extends AppState {
   registerUser: (userData: { email: string; username: string; password: string; displayName?: string }) => Promise<boolean>;
   logoutUser: () => void;
   refreshData: () => Promise<void>;
+  refreshUserData: (userId: string, contestId: string) => Promise<void>;
   submitPrediction: (predictionData: {
     stockId: string;
     predictionType: 'price_target' | 'streak_up' | 'streak_down';
@@ -37,7 +38,7 @@ interface AppStore extends AppState {
   }) => Promise<boolean>;
   
   // Market data state
-  marketData: Record<string, MarketData>;
+  marketData: Record<string, MarketData | null>;
   setMarketData: (symbol: string, data: MarketData) => void;
   fetchMarketData: (symbols: string[]) => Promise<void>;
   
