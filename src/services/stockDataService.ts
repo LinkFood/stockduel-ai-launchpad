@@ -1,7 +1,8 @@
 import type { MarketData, StockSearchResult } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 export class StockDataService {
-  private static baseUrl = 'https://query1.finance.yahoo.com/v8/finance/chart';
+  private static edgeFunctionUrl = 'https://jiwzejsgvovtwisinznp.supabase.co/functions/v1/stock-data';
   private static searchUrl = 'https://query1.finance.yahoo.com/v1/finance/search';
 
   /**
@@ -9,15 +10,16 @@ export class StockDataService {
    */
   static async getCurrentData(symbol: string): Promise<MarketData | null> {
     try {
-      const url = `${this.baseUrl}/${symbol}?interval=1m&range=1d`;
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const { data, error } = await supabase.functions.invoke('stock-data', {
+        body: { symbols: [symbol], type: 'current' }
+      });
+
+      if (error) {
+        console.error(`Error fetching data for ${symbol}:`, error);
+        return null;
       }
-      
-      const data = await response.json();
-      return this.parseYahooData(symbol, data);
+
+      return data?.data?.[symbol] || null;
     } catch (error) {
       console.error(`Error fetching data for ${symbol}:`, error);
       return null;
@@ -33,15 +35,17 @@ export class StockDataService {
     range: string = '1mo'
   ): Promise<MarketData[]> {
     try {
-      const url = `${this.baseUrl}/${symbol}?interval=${interval}&range=${range}`;
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const { data, error } = await supabase.functions.invoke('stock-data', {
+        body: { symbols: [symbol], type: 'historical', interval, range }
+      });
+
+      if (error) {
+        console.error(`Error fetching historical data for ${symbol}:`, error);
+        return [];
       }
-      
-      const data = await response.json();
-      return this.parseYahooHistoricalData(symbol, data);
+
+      const result = data?.data?.[symbol];
+      return Array.isArray(result) ? result : result ? [result] : [];
     } catch (error) {
       console.error(`Error fetching historical data for ${symbol}:`, error);
       return [];
@@ -52,16 +56,21 @@ export class StockDataService {
    * Get market data for multiple stocks at once
    */
   static async getMultipleCurrentData(symbols: string[]): Promise<Record<string, MarketData | null>> {
-    const promises = symbols.map(symbol => 
-      this.getCurrentData(symbol).then(data => ({ symbol, data }))
-    );
-    
-    const results = await Promise.all(promises);
-    
-    return results.reduce((acc, { symbol, data }) => {
-      acc[symbol] = data;
-      return acc;
-    }, {} as Record<string, MarketData | null>);
+    try {
+      const { data, error } = await supabase.functions.invoke('stock-data', {
+        body: { symbols, type: 'current' }
+      });
+
+      if (error) {
+        console.error('Error fetching multiple stock data:', error);
+        return {};
+      }
+
+      return data?.data || {};
+    } catch (error) {
+      console.error('Error fetching multiple stock data:', error);
+      return {};
+    }
   }
 
   /**
