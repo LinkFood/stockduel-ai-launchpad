@@ -11,6 +11,7 @@ import type {
 } from '@/types';
 import { DatabaseService } from '@/lib/supabase';
 import { StockDataService } from '@/services/stockDataService';
+import { supabase } from '@/lib/supabase';
 
 interface AppStore extends AppState {
   // Actions
@@ -94,37 +95,52 @@ export const useAppStore = create<AppStore>()(
         set({ isLoading: true, error: null });
         
         try {
-          // Get current or upcoming contest
-          let contest = await DatabaseService.getCurrentContest();
-          if (!contest) {
-            contest = await DatabaseService.getUpcomingContest();
+          // Get stocks from database
+          const { data: featuredStocks, error: stocksError } = await supabase
+            .from('stocks')
+            .select('*')
+            .eq('is_featured', true);
+          
+          if (stocksError || !featuredStocks) {
+            throw new Error('Failed to load stocks from database');
           }
+
+          // Get current contest periods
+          const { data: contestPeriods, error: contestError } = await supabase
+            .from('contest_periods')
+            .select('*')
+            .eq('is_active', true)
+            .single();
           
-          // Get featured stocks
-          const featuredStocks = await DatabaseService.getFeaturedStocks();
-          
-          // Get market data for featured stocks
-          const symbols = featuredStocks.map(s => s.symbol);
+          // Convert database stocks to app format and get real-time prices
+          const symbols = featuredStocks.map((s: any) => s.symbol);
           const marketDataResults = await StockDataService.getMultipleCurrentData(symbols);
           
-          // Update stocks with current prices
-          const stocksWithPrices = featuredStocks.map(stock => ({
-            ...stock,
-            currentPrice: marketDataResults[stock.symbol]?.price,
-            priceChange: marketDataResults[stock.symbol]?.change,
-            priceChangePercent: marketDataResults[stock.symbol]?.changePercent
+          // Update stocks with current prices from Yahoo Finance
+          const stocksWithPrices = featuredStocks.map((stock: any) => ({
+            id: stock.id,
+            symbol: stock.symbol,
+            companyName: stock.name,
+            sector: 'Technology', // Default for now
+            currentPrice: marketDataResults[stock.symbol]?.price || stock.current_price || 0,
+            priceChange: marketDataResults[stock.symbol]?.change || stock.change_24h || 0,
+            priceChangePercent: marketDataResults[stock.symbol]?.changePercent || ((stock.change_24h || 0) / (stock.current_price || 1)) * 100,
+            isActive: stock.is_active,
+            isFeatured: stock.is_featured,
+            difficultyLevel: 3, // Default difficulty
+            marketCap: stock.market_cap || 0
           }));
           
           set({ 
-            currentContestPeriod: contest,
+            currentContestPeriod: contestPeriods || null,
             featuredStocks: stocksWithPrices,
             marketData: marketDataResults
           });
 
           // If user is logged in, get their data
           const { user } = get();
-          if (user && contest) {
-            await get().refreshUserData(user.id, contest.id);
+          if (user && contestPeriods) {
+            await get().refreshUserData(user.id, contestPeriods.id);
           }
           
         } catch (error) {

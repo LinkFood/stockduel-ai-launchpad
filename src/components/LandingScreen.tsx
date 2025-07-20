@@ -1,18 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 import StockCard from './StockCard';
 import ContestStatus from './ContestStatus';
 import QuickLeaderboard from './QuickLeaderboard';
 import AuthPrompt from './AuthPrompt';
 import PredictionModal from './PredictionModal';
-import { useFeaturedStocks, useCurrentContest } from '@/store/useAppStore';
+import { useFeaturedStocks, useCurrentContest, useAppLoading, useAppStore } from '@/store/useAppStore';
 
 const LandingScreen = () => {
   const { user, profile, signOut, loading: authLoading } = useAuth();
   const featuredStocks = useFeaturedStocks();
   const currentContest = useCurrentContest();
+  const isLoading = useAppLoading();
+  const { initializeApp } = useAppStore();
+
+  // Initialize app data when component mounts
+  useEffect(() => {
+    if (featuredStocks.length === 0 && !isLoading) {
+      initializeApp();
+    }
+  }, [initializeApp, featuredStocks.length, isLoading]);
 
   if (authLoading) {
     return (
@@ -80,10 +89,11 @@ const LandingScreen = () => {
           ))}
         </div>
 
-        {featuredStocks.length === 0 && (
+        {(featuredStocks.length === 0 || isLoading) && (
           <div className="text-center py-12 text-gray-500">
             <div className="text-4xl mb-4">📈</div>
-            <p>Loading featured stocks...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p>Loading real stock data...</p>
           </div>
         )}
       </div>
